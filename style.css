@@ -1,0 +1,27 @@
+h1{ 
+    margin: -10px ; 
+    margin-bottom: 20px;
+    text-align: center;
+    background-color: blueviolet;
+    color: white;
+    padding: 15px;
+}
+
+form{
+    text-align: center;
+}
+
+.form{
+    padding: 25px  ; 
+}
+
+.submit{
+    border: solid 0px ;
+    background-color: blue;
+    color: aliceblue;
+    padding: 10px; 
+    border-radius: 10px;
+    cursor:pointer;
+}
+
+

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=, initial-scale=1.0">
+    <title>Search App</title>
+    <link href="./style.css" rel="stylesheet">
+    <script src = "./app.js" defer></script>
+</head>
+<body>
+    <h1>GitHub Organizations Explorer</h1>  
+
+    <form id = "fetch-form">
+        <span class="form">
+        <label for = "org">Organization</label> 
+        <select id = "org" name="org">
+            <option value = "google">Google</option> 
+            <option value = "microsoft">Microsoft</option> 
+            <option value = "Facebook">Facebook</option> 
+        </select> 
+        </span>
+
+        <span class="form">
+        <label for="top-repos">N (Top repos)</label> 
+        <input type="number" id= "top-repos" name="top-repos">   
+         </span>
+
+        <span class="form">
+        <label for="oldest-forks">M (Oldest forks)</label> 
+        <input type="number" id= "oldest-forks" name="oldest-forks">       
+        </span>
+
+        <input type = "submit" value = "Fetch" class="submit"> 
+    </form>
+    <div id="data">
+
+    </div>
+</body>
+</html>
