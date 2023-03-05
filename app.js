@@ -1,5 +1,3 @@
-
-
 async function getRepos(org, n){// returns a promise which resolves with a list of top m forked repos of organisation named org 
   
   let data = []  ; 
@@ -39,7 +37,7 @@ async function get_oldest_forks(repo_name, org, m){
 }
 
 
-// the forks data is not paginated due to some issue with cors headers. if you wang u can uncomment below function, and comment the same fn below this fn 
+// the forks data is not paginated due to some issue with cors headers as mentioned in readme
 
 // async function get_oldest_forks(repo_name, org, m){
 //   // returns a promise which resolves with a list of n oldest forks of repo names repo_name, of organisation named org 
@@ -83,8 +81,7 @@ async function get_oldest_forkers(repo_name, org, m){
 
 async function setup(org, n, m){ 
   // returns a promise which resolves to a list which has the following str- 
-  // list of objects, each of which has attributes of repos. the forks attribute is a list of objects
-  // each of which has user info about the forker 
+  // list of objects, each of which has attributes of repos. 
   let final_data = [] ;
   let repo_entry = {} ;
   let response = await getRepos(org, n) // getting repos
@@ -97,10 +94,6 @@ async function setup(org, n, m){
     repo_entry.url = repo.url 
     repo_entry.forks_count = repo.forks_count
 
-    forkers_list = await get_oldest_forkers(repo.name, org, m) // getting forks 
-    
-    repo_entry.forks = forkers_list ; 
-
     final_data.push(repo_entry) ; 
   }
 
@@ -109,23 +102,38 @@ async function setup(org, n, m){
     return final_data ; 
 } 
 
-function make_forkers_list(list){ // helper function to make a DOM list of forks of each repo
-  // using a list of forks as obtained from setup
-  const list_of_forks = document.createElement("ol"); 
+function make_forkers_list(list, parent){ // helper function to make a DOM list of forks of each repo
+    // using a list of objects each of which has user info about the forker 
+    // adds these to a parent node  
+    const list_of_forks = document.createElement("ol"); 
+    parent.innerHTML = "" 
+    for (let entry of list){
+      let list_item = document.createElement("li") 
+      let link_to_repo = document.createElement("a") 
+      
+      link_to_repo.setAttribute("href", entry.url) 
+      link_to_repo.setAttribute("target", "_blank")  
   
-  for (let entry of list){
-    let list_item = document.createElement("li") 
-    let link_to_repo = document.createElement("a") 
-    
-    link_to_repo.setAttribute("href", entry.url) 
-    link_to_repo.setAttribute("target", "_blank")  
+      link_to_repo.textContent = entry.owner.login 
+      list_item.appendChild(link_to_repo) 
+      list_of_forks.appendChild(list_item) 
+    }
+    parent.appendChild(list_of_forks)  
+    return 
+  } 
 
-    link_to_repo.textContent = entry.owner.login 
-    list_item.appendChild(link_to_repo) 
-    list_of_forks.appendChild(list_item) 
-  }
-  return list_of_forks 
-} 
+
+function fetch_forks(org, m, parent, repo_name){
+    // this function gets all the forks and then renders them using make_forkers_list
+    
+    get_oldest_forkers(repo_name, org, m). // getting forks
+    then((fork_list) => {
+        make_forkers_list(fork_list, parent)
+    }) 
+
+}
+
+
 
 async function render(){ // function to finally render all the html 
 
@@ -150,12 +158,13 @@ async function render(){ // function to finally render all the html
         else{
         setup(org_form.value, n, m).then((fetch_data) => { // fetch_data has structure as described above
 
-        data_node.innerHTML = "" 
+        data_node.innerHTML = ""  // resetting the text each time fetch button clicked
         const list_of_repos = document.createElement("ol") 
-
+    
         for (let entry of fetch_data){
           const doc_frag2 = document.createDocumentFragment() ; 
           let list_item = document.createElement("li") 
+     
           let node = document.createElement("div") ;
 
           const name_node = document.createElement("h3") // name of the repo 
@@ -176,18 +185,31 @@ async function render(){ // function to finally render all the html
           fork_count.textContent = "forks: " + entry.forks_count  
           doc_frag2.appendChild(fork_count) 
           
-          let forkers_list = make_forkers_list(entry.forks) // list of forkers 
-          doc_frag2.appendChild(forkers_list) 
+         
+         let get_forks_div = document.createElement("div") 
+         let get_forks_button = document.createElement("button") ; // creating a button to view forkers
+
+          doc_frag2.appendChild(get_forks_button)
+          doc_frag2.appendChild(get_forks_div) 
+
+          get_forks_button.setAttribute("type", "button") 
+          get_forks_button.setAttribute("class", "submit") 
+          get_forks_button.innerText = "View forkers"
+          get_forks_button.addEventListener("click", fetch_forks.bind(null,org_form.value, m, get_forks_div, entry.name)) ;
+          
+
+         
           node.appendChild(doc_frag2) 
-          list_item.appendChild(node)  
+          list_item.appendChild(node) 
+          
+
 
           list_of_repos.appendChild(list_item) 
+       
         }
         data_node.appendChild(list_of_repos) 
       }) 
-
-
-    }
+ }
   }
     
     )
@@ -203,5 +225,7 @@ function init() { // initialising the render function
     
   })   
 }
+
+
 
 init() ;
