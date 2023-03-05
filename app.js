@@ -39,7 +39,7 @@ async function get_oldest_forks(repo_name, org, m){
 }
 
 
-// the forks data is not paginated due to some issue with cors headers as mentioned in readme
+// the forks data is not paginated due to some issue with cors headers. if you wang u can uncomment below function, and comment the same fn below this fn 
 
 // async function get_oldest_forks(repo_name, org, m){
 //   // returns a promise which resolves with a list of n oldest forks of repo names repo_name, of organisation named org 
